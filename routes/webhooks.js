@@ -25,17 +25,18 @@ router.post('/splunk', async (req, res) => {
     for (const event of events) {
       // Normalize the event
       const normalizedEvent = {
+        id: event.id || `splunk-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         timestamp: event._time || event.timestamp || new Date(),
         severity: mapSeverity(event.severity || event.Priority || 'MEDIUM'),
-        eventType: event.signature_id || event.EventID || event.signature || 'Security Alert',
-        source: 'Splunk',
-        sourceIp: event.src_ip || event.SourceIP || event.source || '',
-        destinationIp: event.dest_ip || event.DestinationIP || event.destination || '',
-        country: event.country || event.Country || '',
-        city: event.city || event.City || '',
+        attack_type: event.signature_id || event.EventID || event.signature || 'Security Alert',
+        src_ip: event.src_ip || event.SourceIP || event.source || '0.0.0.0',
+        dst_ip: event.dest_ip || event.DestinationIP || event.destination || '0.0.0.0',
+        protocol: event.protocol || 'TCP',
         description: event.signature || event.Message || event.description || 'Security event from Splunk',
-        rawLog: JSON.stringify(event),
-        externalId: event._raw || event.id || `splunk-${Date.now()}`
+        location: {
+          country: event.country || event.Country || '',
+          city: event.city || event.City || ''
+        }
       };
 
       // Save to database if connected
@@ -100,16 +101,18 @@ router.post('/custom', async (req, res) => {
     const events = Array.isArray(payload.events) ? payload.events : [payload];
     
     const processedEvents = events.map(event => ({
+      id: event.id || `custom-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       timestamp: event.timestamp || new Date(),
       severity: mapSeverity(event.severity || 'MEDIUM'),
-      eventType: event.type || event.eventType || 'Security Event',
-      source: payload.source || 'Custom',
-      sourceIp: event.source_ip || event.src_ip || '',
-      destinationIp: event.destination_ip || event.dst_ip || '',
-      country: event.country || '',
-      city: event.city || '',
+      attack_type: event.attack_type || event.type || event.eventType || 'Security Event',
+      src_ip: event.src_ip || event.source_ip || '0.0.0.0',
+      dst_ip: event.dst_ip || event.destination_ip || '0.0.0.0',
+      protocol: event.protocol || 'HTTP',
       description: event.description || event.message || 'Security event detected',
-      rawLog: JSON.stringify(event)
+      location: {
+        country: event.country || '',
+        city: event.city || ''
+      }
     }));
 
     // Save events
