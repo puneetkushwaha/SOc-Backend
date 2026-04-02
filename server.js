@@ -21,6 +21,7 @@ const alertsRouter = require('./routes/alerts');
 const webhooksRouter = require('./routes/webhooks');
 
 const app = express();
+app.set('trust proxy', 1); // Trust Render's proxy for express-rate-limit
 const server = http.createServer(app);
 
 const io = new Server(server, {
