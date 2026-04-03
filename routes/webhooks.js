@@ -75,7 +75,7 @@ router.post('/splunk', async (req, res) => {
       });
     }
 
-    console.log(`✅ Processed ${processedEvents.length} events from Splunk`);
+    console.log(`📡 [LOG] SPLUNK WEBHOOK SUCCESS: Processed ${processedEvents.length} events`);
     res.status(200).json({ 
       success: true, 
       message: `Processed ${processedEvents.length} events`,
@@ -83,7 +83,7 @@ router.post('/splunk', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error processing Splunk webhook:', error);
+    console.error('❌ [LOG] SPLUNK WEBHOOK FAILED:', error.message);
     res.status(500).json({ 
       success: false, 
       error: error.message 
