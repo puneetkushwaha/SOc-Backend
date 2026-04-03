@@ -33,6 +33,8 @@ router.post('/splunk', async (req, res) => {
         dst_ip: event.dest_ip || event.DestinationIP || event.destination || '0.0.0.0',
         protocol: event.protocol || 'TCP',
         description: event.signature || event.Message || event.description || 'Security event from Splunk',
+        isVerified: false,
+        isThreat: false,
         location: {
           country: event.country || event.Country || '',
           city: event.city || event.City || ''
@@ -109,6 +111,8 @@ router.post('/custom', async (req, res) => {
       dst_ip: event.dst_ip || event.destination_ip || '0.0.0.0',
       protocol: event.protocol || 'HTTP',
       description: event.description || event.message || 'Security event detected',
+      isVerified: false,
+      isThreat: false,
       location: {
         country: event.country || '',
         city: event.city || ''

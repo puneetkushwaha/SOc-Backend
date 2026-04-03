@@ -166,6 +166,8 @@ class SIEMIntegrationService {
       country: event.country || event.Country || '',
       city: event.city || event.City || '',
       description: event.signature || event.Message || event.description || 'Security event detected',
+      isVerified: false,
+      isThreat: false,
       rawLog: JSON.stringify(event),
       externalId: event._raw || event.id || null
     };

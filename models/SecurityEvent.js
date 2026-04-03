@@ -48,6 +48,16 @@ const securityEventSchema = new mongoose.Schema({
     city: String,
     lat: Number,
     lng: Number
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  isThreat: {
+    type: Boolean,
+    default: false,
+    index: true
   }
 }, {
   timestamps: true

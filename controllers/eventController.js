@@ -23,6 +23,10 @@ const getEvents = async (req, res) => {
       query.status = status;
     }
 
+    if (req.query.isVerified !== undefined) {
+      query.isVerified = req.query.isVerified === 'true';
+    }
+
     if (startDate || endDate) {
       query.timestamp = {};
       if (startDate) {
@@ -152,6 +156,39 @@ const acknowledgeEvent = async (req, res) => {
   }
 };
 
+const verifyEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isThreat } = req.body;
+
+    const event = await SecurityEvent.findOneAndUpdate(
+      { id },
+      { isVerified: true, isThreat: isThreat !== undefined ? isThreat : true },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        error: 'Event not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: event
+    });
+  } catch (error) {
+    console.error('Error verifying event:', error);
+    const mockEvent = { ...mockEvents[0], isVerified: true, isThreat: true };
+    res.json({
+      success: true,
+      data: mockEvent,
+      note: 'Using mock data - database unavailable'
+    });
+  }
+};
+
 const getEventStats = async (req, res) => {
   try {
     const stats = await SecurityEvent.aggregate([
@@ -239,5 +276,6 @@ module.exports = {
   getEventById,
   updateEvent,
   acknowledgeEvent,
+  verifyEvent,
   getEventStats
 };
